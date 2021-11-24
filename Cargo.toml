@@ -1,0 +1,13 @@
+[package]
+name = "serde-toml-merge"
+description = "Merge your toml values."
+version = "0.1.0"
+edition = "2018"
+authors = ["Jeremie Drouet <jeremie.drouet@gmail.com>"]
+license = "MIT"
+readme = "readme.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+toml = "0.5"
