@@ -29,11 +29,11 @@ impl fmt::Display for Error {
     }
 }
 
-fn merge_inner_tables(
-    mut value: Map<String, Value>,
+fn merge_into_table_inner(
+    value: &mut Map<String, Value>,
     other: Map<String, Value>,
     path: &str,
-) -> Result<Map<String, Value>, Error> {
+) -> Result<(), Error> {
     for (name, inner) in other {
         if let Some(existing) = value.remove(&name) {
             let inner_path = format!("{}.{}", path, name);
@@ -42,15 +42,24 @@ fn merge_inner_tables(
             value.insert(name, inner);
         }
     }
-    Ok(value)
+    Ok(())
 }
 
 /// Merges two toml tables into a single one.
 pub fn merge_tables(
-    value: Map<String, Value>,
+    mut value: Map<String, Value>,
     other: Map<String, Value>,
 ) -> Result<Map<String, Value>, Error> {
-    merge_inner_tables(value, other, "$")
+    merge_into_table_inner(&mut value, other, "$")?;
+    Ok(value)
+}
+
+/// Merges two toml tables into a single one.
+pub fn merge_into_table(
+    value: &mut Map<String, Value>,
+    other: Map<String, Value>,
+) -> Result<(), Error> {
+    merge_into_table_inner(value, other, "$")
 }
 
 fn merge_inner(value: Value, other: Value, path: &str) -> Result<Value, Error> {
@@ -64,8 +73,9 @@ fn merge_inner(value: Value, other: Value, path: &str) -> Result<Value, Error> {
             existing.extend(inner);
             Ok(Value::Array(existing))
         }
-        (Value::Table(existing), Value::Table(inner)) => {
-            Ok(Value::Table(merge_inner_tables(existing, inner, path)?))
+        (Value::Table(mut existing), Value::Table(inner)) => {
+            merge_into_table_inner(&mut existing, inner, path)?;
+            Ok(Value::Table(existing))
         }
         (v, o) => Err(Error::new(path.to_owned(), v.type_str(), o.type_str())),
     }
