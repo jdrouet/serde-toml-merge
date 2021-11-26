@@ -1,11 +1,12 @@
+use std::fmt;
 use toml::value::Map;
 use toml::Value;
 
 #[derive(Debug, PartialEq)]
 pub struct Error {
-    path: String,
-    expected: &'static str,
-    existing: &'static str,
+    pub path: String,
+    pub expected: &'static str,
+    pub existing: &'static str,
 }
 
 impl Error {
@@ -15,6 +16,16 @@ impl Error {
             expected,
             existing,
         }
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
+        write!(
+            f,
+            "Incompatible types at path \"{}\", expected \"{}\" received \"{}\".",
+            self.path, self.expected, self.existing
+        )
     }
 }
 
@@ -34,6 +45,7 @@ fn merge_inner_tables(
     Ok(value)
 }
 
+/// Merges two toml tables into a single one.
 pub fn merge_tables(
     value: Map<String, Value>,
     other: Map<String, Value>,
@@ -59,6 +71,7 @@ fn merge_inner(value: Value, other: Value, path: &str) -> Result<Value, Error> {
     }
 }
 
+/// Merges two toml values into a single one.
 pub fn merge(value: Value, other: Value) -> Result<Value, Error> {
     merge_inner(value, other, "$")
 }
