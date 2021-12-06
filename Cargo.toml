@@ -4,6 +4,7 @@ description = "Merge your toml values."
 version = "0.3.0"
 edition = "2018"
 authors = ["Jeremie Drouet <jeremie.drouet@gmail.com>"]
+repository = "https://github.com/jdrouet/serde-toml-merge"
 license = "MIT"
 readme = "readme.md"
 
