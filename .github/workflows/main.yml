@@ -1,0 +1,29 @@
+name: testing and coverage
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            components: clippy
+
+      - name: run code check with clippy
+        run: cargo clippy --tests -- -D warnings
+
+      - name: run code coverage
+        uses: actions-rs/tarpaulin@v0.1
+
+      - name: upload code coverage results
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+
