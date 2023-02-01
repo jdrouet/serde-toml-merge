@@ -47,7 +47,7 @@ checksum = "bb7d1f0d3021d347a83e556fc4683dea2ea09d87bccdf88ff5c12545d89d5efb"
 
 [[package]]
 name = "serde-toml-merge"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "toml",
 ]
