@@ -1,9 +1,6 @@
 name: testing and coverage
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   test:
@@ -13,17 +10,35 @@ jobs:
 
       - uses: actions-rs/toolchain@v1
         with:
-            toolchain: stable
-            components: clippy
+          toolchain: stable
+          components: rustfmt,clippy
+    
+      - name: run lint
+        run: cargo fmt --check
 
       - name: run code check with clippy
+        uses: giraffate/clippy-action@v1
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          clippy_flags: -- -Dwarnings
+          fail_on_error: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-review'
+
+      - name: run code check with clippy
+        if: ${{ github.event_name != 'pull_request' }}
         run: cargo clippy --tests -- -D warnings
 
-      - name: run code coverage
-        uses: actions-rs/tarpaulin@v0.1
+      - name: install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: run tests
+        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
       - name: upload code coverage results
         uses: codecov/codecov-action@v1.0.2
         with:
+          fail_ci_if_error: false
+          files: lcov.info
           token: ${{secrets.CODECOV_TOKEN}}
 
