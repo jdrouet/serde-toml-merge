@@ -36,7 +36,7 @@ fn merge_into_table_inner(
 ) -> Result<(), Error> {
     for (name, inner) in other {
         if let Some(existing) = value.remove(&name) {
-            let inner_path = format!("{}.{}", path, name);
+            let inner_path = format!("{path}.{name}");
             value.insert(name, merge_inner(existing, inner, &inner_path)?);
         } else {
             value.insert(name, inner);
