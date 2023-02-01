@@ -1,5 +1,5 @@
 use std::fmt;
-use toml::value::Map;
+use toml::map::Map;
 use toml::Value;
 
 #[derive(Debug, PartialEq)]
