@@ -33,11 +33,15 @@ fn merge_into_table_inner(
     value: &mut Map<String, Value>,
     other: Map<String, Value>,
     path: &str,
+    replace_arrays: bool,
 ) -> Result<(), Error> {
     for (name, inner) in other {
         if let Some(existing) = value.remove(&name) {
             let inner_path = format!("{path}.{name}");
-            value.insert(name, merge_inner(existing, inner, &inner_path, false)?);
+            value.insert(
+                name,
+                merge_inner(existing, inner, &inner_path, replace_arrays)?,
+            );
         } else {
             value.insert(name, inner);
         }
@@ -49,8 +53,9 @@ fn merge_into_table_inner(
 pub fn merge_tables(
     mut value: Map<String, Value>,
     other: Map<String, Value>,
+    replace_arrays: bool,
 ) -> Result<Map<String, Value>, Error> {
-    merge_into_table_inner(&mut value, other, "$")?;
+    merge_into_table_inner(&mut value, other, "$", replace_arrays)?;
     Ok(value)
 }
 
@@ -58,8 +63,9 @@ pub fn merge_tables(
 pub fn merge_into_table(
     value: &mut Map<String, Value>,
     other: Map<String, Value>,
+    replace_arrays: bool,
 ) -> Result<(), Error> {
-    merge_into_table_inner(value, other, "$")
+    merge_into_table_inner(value, other, "$", replace_arrays)
 }
 
 fn merge_inner(
@@ -80,7 +86,7 @@ fn merge_inner(
             Ok(Value::Array(existing))
         }
         (Value::Table(mut existing), Value::Table(inner)) => {
-            merge_into_table_inner(&mut existing, inner, path)?;
+            merge_into_table_inner(&mut existing, inner, path, replace_arrays)?;
             Ok(Value::Table(existing))
         }
         (v, o) => Err(Error::new(path.to_owned(), v.type_str(), o.type_str())),
@@ -114,7 +120,7 @@ mod tests {
             let first = $first.parse::<Value>().unwrap();
             let second = $second.parse::<Value>().unwrap();
             let result = $result.parse::<Value>().unwrap();
-            assert_eq!(merge(first, second, $replace_arrays).unwrap(), result);
+            assert_eq!(merge(first, second, ($replace_arrays)).unwrap(), result);
         }};
         // 3-argument fallback: default replace_arrays = false
         ($first:expr, $second:expr, $result:expr) => {
