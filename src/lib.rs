@@ -37,7 +37,7 @@ fn merge_into_table_inner(
     for (name, inner) in other {
         if let Some(existing) = value.remove(&name) {
             let inner_path = format!("{path}.{name}");
-            value.insert(name, merge_inner(existing, inner, &inner_path)?);
+            value.insert(name, merge_inner(existing, inner, &inner_path, false)?);
         } else {
             value.insert(name, inner);
         }
@@ -62,14 +62,20 @@ pub fn merge_into_table(
     merge_into_table_inner(value, other, "$")
 }
 
-fn merge_inner(value: Value, other: Value, path: &str) -> Result<Value, Error> {
+fn merge_inner(
+    value: Value,
+    other: Value,
+    path: &str,
+    replace_arrays: bool,
+) -> Result<Value, Error> {
     match (value, other) {
         (Value::String(_), Value::String(inner)) => Ok(Value::String(inner)),
         (Value::Integer(_), Value::Integer(inner)) => Ok(Value::Integer(inner)),
         (Value::Float(_), Value::Float(inner)) => Ok(Value::Float(inner)),
         (Value::Boolean(_), Value::Boolean(inner)) => Ok(Value::Boolean(inner)),
         (Value::Datetime(_), Value::Datetime(inner)) => Ok(Value::Datetime(inner)),
-        (Value::Array(mut existing), Value::Array(inner)) => {
+        (Value::Array(_), Value::Array(inner)) if replace_arrays => Ok(Value::Array(inner)),
+        (Value::Array(mut existing), Value::Array(inner)) if !replace_arrays => {
             existing.extend(inner);
             Ok(Value::Array(existing))
         }
@@ -82,8 +88,8 @@ fn merge_inner(value: Value, other: Value, path: &str) -> Result<Value, Error> {
 }
 
 /// Merges two toml values into a single one.
-pub fn merge(value: Value, other: Value) -> Result<Value, Error> {
-    merge_inner(value, other, "$")
+pub fn merge(value: Value, other: Value, replace_arrays: bool) -> Result<Value, Error> {
+    merge_inner(value, other, "$", replace_arrays)
 }
 
 #[cfg(test)]
@@ -98,22 +104,23 @@ mod tests {
         ($first: expr, $second: expr,) => {{
             let first = $first.parse::<Value>().unwrap();
             let second = $second.parse::<Value>().unwrap();
-            merge(first, second).unwrap_err()
+            merge(first, second, false).unwrap_err()
         }};
     }
 
     macro_rules! should_match {
-        ($first: expr, $second: expr, $result: expr) => {
-            should_match!($first, $second, $result,)
-        };
-        ($first: expr, $second: expr, $result: expr,) => {
+        // 4-argument form with replace_arrays flag
+        ($first:expr, $second:expr, $result:expr, $replace_arrays:expr) => {{
             let first = $first.parse::<Value>().unwrap();
             let second = $second.parse::<Value>().unwrap();
             let result = $result.parse::<Value>().unwrap();
-            assert_eq!(merge(first, second).unwrap(), result);
+            assert_eq!(merge(first, second, $replace_arrays).unwrap(), result);
+        }};
+        // 3-argument fallback: default replace_arrays = false
+        ($first:expr, $second:expr, $result:expr) => {
+            should_match!($first, $second, $result, false)
         };
     }
-
     #[test]
     fn with_basic() {
         should_match!(
@@ -138,16 +145,26 @@ mod tests {
         boolean = false
         keep_me = true
         missing = true
-        "#,
+        "#
         );
     }
 
     #[test]
-    fn with_array() {
+    fn with_array_merged() {
         should_match!(
             r#"foo = ["a", "b"]"#,
             r#"foo = ["c", "d"]"#,
-            r#"foo = ["a", "b", "c", "d"]"#,
+            r#"foo = ["a", "b", "c", "d"]"#
+        );
+    }
+
+    #[test]
+    fn with_array_replaced() {
+        should_match!(
+            r#"foo = ["a", "b"]"#,
+            r#"foo = ["c", "d"]"#,
+            r#"foo = ["c", "d"]"#,
+            true
         );
     }
 
@@ -166,7 +183,7 @@ mod tests {
             [foo]
             bar = "baz"
             hello = "world"
-        "#,
+        "#
         );
     }
 
