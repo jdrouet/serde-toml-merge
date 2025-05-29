@@ -33,13 +33,21 @@ impl fmt::Display for Error {
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Merger {
     /// Whether to replace arrays completely or extend them (by default) for backward compatibility
-    pub replace_arrays: bool,
+    replace_arrays: bool,
 }
 
 impl Merger {
     /// Create a new Merger with default settings
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn replace_arrays(&self) -> bool {
+        self.replace_arrays
+    }
+
+    pub fn set_replace_arrays(&mut self, value: bool) {
+        self.replace_arrays = value
     }
 
     /// Set whether arrays should be replaced or extended
@@ -213,12 +221,7 @@ mod tests {
             r#"foo = ["c", "d"]"#,
             true
         );
-        should_match!(
-            r#"foo = ["a", "b"]"#,
-            r#"foo = []"#,
-            r#"foo = []"#,
-            true
-        );
+        should_match!(r#"foo = ["a", "b"]"#, r#"foo = []"#, r#"foo = []"#, true);
     }
 
     #[test]
