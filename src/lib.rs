@@ -78,9 +78,9 @@ impl Merger {
         &self,
         value: &mut Map<String, Value>,
         other: Map<String, Value>,
-    ) -> Result<Map<String, Value>, Error> {
+    ) -> Result<(), Error> {
         self.merge_into_table_inner(value, other, "$")?;
-        Ok(value.to_owned())
+        Ok(())
     }
 
     fn merge_into_table_inner(
@@ -110,6 +110,15 @@ pub fn merge_tables(
     let merger = Merger::new();
     merger.merge_tables(&mut value, other)?;
     Ok(value)
+}
+
+/// Merges two toml tables into a single one.
+pub fn merge_into_table(
+    value: &mut Map<String, Value>,
+    other: Map<String, Value>,
+) -> Result<(), Error> {
+    let merger = Merger::new();
+    merger.merge_tables(value, other)
 }
 
 /// Merges two toml values into a single one.
