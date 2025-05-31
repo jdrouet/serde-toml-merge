@@ -135,18 +135,14 @@ pub fn merge(value: Value, other: Value) -> Result<Value, Error> {
     merger.merge(value, other)
 }
 
-pub fn merge_with_options(
-    value: Value,
-    other: Value,
-    replace_arrays: bool,
-) -> Result<Value, Error> {
-    let merger = Merger::new().with_replace_arrays(replace_arrays);
+pub fn merge_replace(value: Value, other: Value) -> Result<Value, Error> {
+    let merger = Merger::new().with_replace_arrays(true);
     merger.merge(value, other)
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{merge, merge_with_options, Error};
+    use crate::{merge, merge_replace, Error};
     use toml::Value;
 
     macro_rules! should_fail {
@@ -166,10 +162,13 @@ mod tests {
             let first = $first.parse::<Value>().unwrap();
             let second = $second.parse::<Value>().unwrap();
             let result = $result.parse::<Value>().unwrap();
-            assert_eq!(
-                merge_with_options(first, second, ($replace_arrays)).unwrap(),
-                result
-            );
+            let replace_arrays = $replace_arrays;
+
+            if replace_arrays {
+                assert_eq!(merge_replace(first, second).unwrap(), result);
+            } else {
+                assert_eq!(merge(first, second).unwrap(), result);
+            }
         }};
         // 3-argument fallback: default replace_arrays = false
         ($first:expr, $second:expr, $result:expr) => {
