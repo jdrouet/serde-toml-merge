@@ -135,14 +135,9 @@ pub fn merge(value: Value, other: Value) -> Result<Value, Error> {
     merger.merge(value, other)
 }
 
-pub fn merge_replace(value: Value, other: Value) -> Result<Value, Error> {
-    let merger = Merger::new().with_replace_arrays(true);
-    merger.merge(value, other)
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::{merge, merge_replace, Error};
+    use crate::{merge, Error, Merger};
     use toml::Value;
 
     macro_rules! should_fail {
@@ -165,7 +160,13 @@ mod tests {
             let replace_arrays = $replace_arrays;
 
             if replace_arrays {
-                assert_eq!(merge_replace(first, second).unwrap(), result);
+                assert_eq!(
+                    Merger::new()
+                        .with_replace_arrays(replace_arrays)
+                        .merge(first, second)
+                        .unwrap(),
+                    result
+                );
             } else {
                 assert_eq!(merge(first, second).unwrap(), result);
             }
