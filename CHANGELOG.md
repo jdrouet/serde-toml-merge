@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.10](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.9...v0.3.10) - 2025-07-14
+
+### Other
+
+- *(deps)* Bump toml from 0.8.23 to 0.9.2 ([#45](https://github.com/jdrouet/serde-toml-merge/pull/45))
+- impl std::error::Error trait for custom Error type ([#42](https://github.com/jdrouet/serde-toml-merge/pull/42))
+- *(deps)* Bump toml from 0.8.22 to 0.8.23 ([#40](https://github.com/jdrouet/serde-toml-merge/pull/40))
+
 ## [0.3.9](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.8...v0.3.9) - 2025-04-29
 
 ### Other
