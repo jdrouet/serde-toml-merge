@@ -91,16 +91,15 @@ pub fn merge(value: Value, other: Value) -> Result<Value, Error> {
 #[cfg(test)]
 mod tests {
     use crate::{merge, Error};
-    use toml::Value;
 
     macro_rules! should_fail {
         ($first: expr, $second: expr) => {
             should_fail!($first, $second,)
         };
         ($first: expr, $second: expr,) => {{
-            let first = $first.parse::<Value>().unwrap();
-            let second = $second.parse::<Value>().unwrap();
-            merge(first, second).unwrap_err()
+            let first = $first.parse::<toml::Table>().unwrap();
+            let second = $second.parse::<toml::Table>().unwrap();
+            merge(first.into(), second.into()).unwrap_err()
         }};
     }
 
@@ -109,38 +108,35 @@ mod tests {
             should_match!($first, $second, $result,)
         };
         ($first: expr, $second: expr, $result: expr,) => {
-            let first = $first.parse::<Value>().unwrap();
-            let second = $second.parse::<Value>().unwrap();
-            let result = $result.parse::<Value>().unwrap();
-            assert_eq!(merge(first, second).unwrap(), result);
+            let first = $first.parse::<toml::Table>().unwrap();
+            let second = $second.parse::<toml::Table>().unwrap();
+            let result = $result.parse::<toml::Table>().unwrap();
+            assert_eq!(merge(first.into(), second.into()).unwrap(), result.into());
         };
     }
 
     #[test]
     fn with_basic() {
         should_match!(
-            r#"
-        string = "foo"
-        integer = 42
-        float = 42.24
-        boolean = true
-        keep_me = true
-        "#,
-            r#"
-        string = "bar"
-        integer = 43
-        float = 24.42
-        boolean = false
-        missing = true
-        "#,
-            r#"
-        string = "bar"
-        integer = 43
-        float = 24.42
-        boolean = false
-        keep_me = true
-        missing = true
-        "#,
+            r#"string = 'foo'
+integer = 42
+float = 42.24
+boolean = true
+keep_me = true
+"#,
+            r#"string = 'bar'
+integer = 43
+float = 24.42
+boolean = false
+missing = true
+"#,
+            r#"string = 'bar'
+integer = 43
+float = 24.42
+boolean = false
+keep_me = true
+missing = true
+"#,
         );
     }
 
