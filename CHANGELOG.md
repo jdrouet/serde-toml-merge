@@ -20,6 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.12](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.11...v0.3.12) - 2025-10-12
+
+### Other
+
+- *(deps)* Bump toml from 0.9.7 to 0.9.8 ([#53](https://github.com/jdrouet/serde-toml-merge/pull/53))
+- *(deps)* Bump toml from 0.9.6 to 0.9.7 ([#52](https://github.com/jdrouet/serde-toml-merge/pull/52))
+- *(deps)* Bump toml from 0.9.5 to 0.9.6 ([#51](https://github.com/jdrouet/serde-toml-merge/pull/51))
+- *(deps)* Bump toml from 0.9.3 to 0.9.5 ([#49](https://github.com/jdrouet/serde-toml-merge/pull/49))
+
 ## [0.3.10](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.9...v0.3.10) - 2025-07-14
 
 ### Other
