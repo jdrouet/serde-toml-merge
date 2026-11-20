@@ -20,6 +20,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.12](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.11...v0.3.12) - 2026-11-20
+
+### Fixed
+
+- *(docs)* make readme example a tested doctest ([#66](https://github.com/jdrouet/serde-toml-merge/pull/66))
+
+### Other
+
+- *(deps)* update lockfile and CI actions ([#67](https://github.com/jdrouet/serde-toml-merge/pull/67))
+- *(deps)* Bump toml from 0.9.8 to 1.0.6+spec-1.1.0 ([#65](https://github.com/jdrouet/serde-toml-merge/pull/65))
+- *(deps)* Bump toml from 0.9.7 to 0.9.8 ([#53](https://github.com/jdrouet/serde-toml-merge/pull/53))
+- *(deps)* Bump toml from 0.9.6 to 0.9.7 ([#52](https://github.com/jdrouet/serde-toml-merge/pull/52))
+- *(deps)* Bump toml from 0.9.5 to 0.9.6 ([#51](https://github.com/jdrouet/serde-toml-merge/pull/51))
+- *(deps)* Bump toml from 0.9.3 to 0.9.5 ([#49](https://github.com/jdrouet/serde-toml-merge/pull/49))
+
 ## [0.3.10](https://github.com/jdrouet/serde-toml-merge/compare/v0.3.9...v0.3.10) - 2025-07-14
 
 ### Other
