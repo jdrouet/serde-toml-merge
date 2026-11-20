@@ -8,7 +8,7 @@ Just like [serde_merge](https://crates.io/crates/serde_merge), this crate allows
 
 ```rust
 use serde_toml_merge::merge;
-use toml::Value;
+use toml::Table;
 
 fn main() {
     let first = r#"
@@ -18,7 +18,7 @@ float = 42.24
 boolean = true
 keep_me = true
 "#
-    .parse::<Value>()
+    .parse::<Table>()
     .unwrap();
 
     let second = r#"
@@ -28,7 +28,7 @@ float = 24.42
 boolean = false
 missing = true
 "#
-    .parse::<Value>()
+    .parse::<Table>()
     .unwrap();
 
     let expected = r#"
@@ -39,9 +39,9 @@ boolean = false
 keep_me = true
 missing = true
 "#
-    .parse::<Value>()
+    .parse::<Table>()
     .unwrap();
 
-    assert_eq!(merge(first, second).unwrap(), expected);
+    assert_eq!(merge(first.into(), second.into()).unwrap(), expected.into());
 }
 ```
